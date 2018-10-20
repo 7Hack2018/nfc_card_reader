@@ -15,15 +15,9 @@ headers = {
 
 def update_token(token_uid):
 
-    path = "/broker/tokens/"
+    path = "/broker/tokens/{}".format(token_uid)
     url = api_host + path
 
-    body = {
-        "id": token_uid,
-        "media_type": "YT",
-        "duration": 20,
-        "is_active": True
-    }
-    response = requests.post(url, data=json.dumps(body), headers=headers)
+    response = requests.post(url, headers=headers)
     response.raise_for_status()
     return response.status_code
