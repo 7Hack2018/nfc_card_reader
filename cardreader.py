@@ -21,6 +21,8 @@ def _array_to_string(array_of_integers):
 # The command we have to send to the NFC card to give us its UID
 GET_UID = [0xFF, 0xCA, 0x00, 0x00, 0x00]
 
+KNOWN_UID_RESET_INTERVAL = 20  # reset the list of known uids every 20s
+
 # get all the available readers
 r = readers()
 print("Available readers:", r)
@@ -31,9 +33,17 @@ print("Using:", reader)
 # Keep track of UIDs that we already sent to the backend so we do not spam it with every read cycle
 list_known_uids = []
 
+cycle_time = 0  # used to store the loop iterations and will be reset to 0 after KNOWN_UID_RESET_INTERVAL
+SLEEP_TIME = 0.1
+
 while True:
+    if cycle_time >= KNOWN_UID_RESET_INTERVAL and len(list_known_uids) > 0:
+        logger.debug("Reset list of known uids")
+        list_known_uids = []
+        cycle_time = 0
+
     try:
-        # get a conection to the inserted card if there is any (otherwise the exception will be thrown
+        # get a connection to the inserted card if there is any (otherwise the exception will be thrown
         connection = reader.createConnection()
         connection.connect()
 
@@ -61,4 +71,5 @@ while True:
         else:
             logger.debug("UID already known")
 
-    time.sleep(0.1)
+    time.sleep(SLEEP_TIME)
+    cycle_time += SLEEP_TIME
