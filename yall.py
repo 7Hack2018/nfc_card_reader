@@ -1,6 +1,5 @@
 import requests
 import logging
-import json
 logger = logging.getLogger(__name__)
 
 logging.getLogger('requests').setLevel(logging.CRITICAL)
@@ -10,14 +9,15 @@ api_key = "123"
 
 headers = {
     "x-api-key": api_key,
-    "content-type": "application/json"
+    "content-type": "application/json",
+    "User-Agent": "nxp-cube"
     }
 
 def update_token(token_uid):
 
-    path = "/broker/tokens/{}".format(token_uid)
+    path = "/broker/tokens/redeem/{}".format(token_uid)
     url = api_host + path
 
-    response = requests.post(url, headers=headers)
+    response = requests.patch(url, headers=headers)
     response.raise_for_status()
     return response.status_code
