@@ -1,0 +1,26 @@
+--- /usr/local/libexec/SmartCardServices/drivers/ifd-ccid.bundle/Contents/Info.plist	2018-10-01 15:40:06.000000000 +0200
++++ Info.plist	2018-10-01 15:36:11.000000000 +0200
+@@ -403,6 +403,7 @@
+ 		<string>0x04E6</string>
+ 		<string>0x1FC9</string>
+ 		<string>0x1FC9</string>
++		<string>0x1FC9</string>
+ 		<string>0x1A74</string>
+ 		<string>0x1A74</string>
+ 		<string>0x076B</string>
+@@ -830,6 +831,7 @@
+ 		<string>0x511A</string>
+ 		<string>0x0107</string>
+ 		<string>0x010B</string>
++		<string>0x0117</string>
+ 		<string>0xB111</string>
+ 		<string>0x6354</string>
+ 		<string>0x1021</string>
+@@ -1257,6 +1259,7 @@
+ 		<string>NTT Communications Corp. SCR3310-NTTCom USB SmartCard Reader</string>
+ 		<string>NXP Pegoda 2 N</string>
+ 		<string>NXP PR533</string>
++		<string>NXP PN7462AU CCID</string>
+ 		<string>OBERTHUR TECHNOLOGIES ID-ONE TOKEN SLIM v2</string>
+ 		<string>OCS ID-One Cosmo Card USB Smart Chip Device</string>
+ 		<string>OMNIKEY CardMan 1021</string>
