@@ -3,6 +3,7 @@ import logging
 from smartcard.System import readers
 import smartcard.Exceptions
 import yall
+import time
 
 logger = logging.getLogger()
 sh = logging.StreamHandler()
@@ -59,3 +60,5 @@ while True:
                 logger.error("Failed updating yall api for token %s with result %s" % (uid, exc))
         else:
             logger.debug("UID already known")
+
+    time.sleep(0.1)
