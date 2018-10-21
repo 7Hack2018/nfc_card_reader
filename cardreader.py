@@ -57,41 +57,44 @@ cycle_time = 0  # used to store the loop iterations and will be reset to 0 after
 SLEEP_TIME = 0.1
 
 while True:
-    if cycle_time >= KNOWN_UID_RESET_INTERVAL and len(list_known_uids) > 0:
-        logger.debug("Reset list of known uids")
-        list_known_uids = []
-        cycle_time = 0
-
     try:
-        # get a connection to the inserted card if there is any (otherwise the exception will be thrown
-        connection = reader.createConnection()
-        connection.connect()
+        if cycle_time >= KNOWN_UID_RESET_INTERVAL and len(list_known_uids) > 0:
+            logger.debug("Reset list of known uids")
+            list_known_uids = []
+            cycle_time = 0
 
-    except smartcard.Exceptions.NoCardException:
-        # No card...keep waiting
-        pass
+        try:
+            # get a connection to the inserted card if there is any (otherwise the exception will be thrown
+            connection = reader.createConnection()
+            connection.connect()
 
-    else:
-        # There is a card so let's ask it for its UID
-        data, sw1, sw2 = connection.transmit(GET_UID)
+        except smartcard.Exceptions.NoCardException:
+            # No card...keep waiting
+            pass
 
-        # get us a nice string out of the ugly byte array
-        uid = _array_to_string(data)
-
-        _play_sound(token_lookup[uid]['sound'])
-
-        logger.debug("Got uid %s" % uid)
-        # Check if we read the card before
-        if uid not in list_known_uids:
-            logger.info("Adding UID to list of known UIDs")
-            list_known_uids.append(uid)  # remember the card so we do not notify again when we see it next time
-            try:
-                result = yall.update_token(token_lookup.get(uid, {}).get('backend_id', '1'))  # Call the backend that the card was inserted
-                logger.info("Updated yall api for token %s with result %s" % (uid, result))
-            except Exception as exc:
-                logger.error("Failed updating yall api for token %s with result %s" % (uid, exc))
         else:
-            logger.debug("UID already known")
+            # There is a card so let's ask it for its UID
+            data, sw1, sw2 = connection.transmit(GET_UID)
 
-    time.sleep(SLEEP_TIME)
-    cycle_time += SLEEP_TIME
+            # get us a nice string out of the ugly byte array
+            uid = _array_to_string(data)
+
+            logger.debug("Got uid %s" % uid)
+            # Check if we read the card before
+            if uid not in list_known_uids:
+                logger.info("Adding UID to list of known UIDs")
+                list_known_uids.append(uid)  # remember the card so we do not notify again when we see it next time
+                _play_sound(token_lookup[uid]['sound'])
+                try:
+                    result = yall.update_token(token_lookup.get(uid, {}).get('backend_id', '1'))  # Call the backend that the card was inserted
+                    logger.info("Updated yall api for token %s with result %s" % (uid, result))
+                except Exception as exc:
+                    logger.error("Failed updating yall api for token %s with result %s" % (uid, exc))
+            else:
+                logger.debug("UID already known")
+
+        time.sleep(SLEEP_TIME)
+        cycle_time += SLEEP_TIME
+
+    except Exception as exc:
+        logger.error("Unexpected error: %s" % exc)
