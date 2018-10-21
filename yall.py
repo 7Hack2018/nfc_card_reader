@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 
 logging.getLogger('requests').setLevel(logging.CRITICAL)
 
-api_host = "http://18e777e3.ngrok.io"
+api_host = "http://18.184.151.41:8000"
 api_key = "123"
 
 headers = {
@@ -15,7 +15,7 @@ headers = {
 
 def update_token(token_uid):
 
-    path = "/broker/tokens/redeem/{}".format(token_uid)
+    path = "/broker/tokens/redeem/{}/".format(token_uid)
     url = api_host + path
 
     response = requests.patch(url, headers=headers)

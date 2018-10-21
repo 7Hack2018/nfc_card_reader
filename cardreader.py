@@ -4,6 +4,7 @@ from smartcard.System import readers
 import smartcard.Exceptions
 import yall
 import time
+import os
 
 logger = logging.getLogger()
 sh = logging.StreamHandler()
@@ -17,6 +18,25 @@ def _array_to_string(array_of_integers):
     :return:
     """
     return ''.join('{:02x}'.format(x) for x in array_of_integers)
+
+def _play_sound(filename):
+    try:
+        os.system('aplay sounds/%s' % filename)
+    except:
+        pass
+
+token_lookup = {
+    '0400f0daa23e81': {'sound': 'cat.wav',      'backend_id': '2'},
+    '04d0f1daa23e80': {'sound': 'cat.wav',      'backend_id': '2'},
+    '04c2e7daa23e80': {'sound': 'chicken.wav',  'backend_id': '1'},
+    '045defdaa23e80': {'sound': 'chicken.wav',  'backend_id': '1'},
+    '048decdaa23e80': {'sound': 'dog.wav',      'backend_id': '3'},
+    '0449e2daa23e80': {'sound': 'dog.wav',      'backend_id': '3'},
+    '04c9e9daa23e80': {'sound': 'elephant.wav', 'backend_id': '5'},
+    '0483e5daa23e80': {'sound': 'elephant.wav', 'backend_id': '5'},
+    '04ece9daa23e80': {'sound': 'horse.wav',    'backend_id': '4'},
+    '0424f0daa23e81': {'sound': 'horse.wav',    'backend_id': '4'}
+}
 
 # The command we have to send to the NFC card to give us its UID
 GET_UID = [0xFF, 0xCA, 0x00, 0x00, 0x00]
@@ -58,13 +78,15 @@ while True:
         # get us a nice string out of the ugly byte array
         uid = _array_to_string(data)
 
+        _play_sound(token_lookup[uid]['sound'])
+
         logger.debug("Got uid %s" % uid)
         # Check if we read the card before
         if uid not in list_known_uids:
             logger.info("Adding UID to list of known UIDs")
             list_known_uids.append(uid)  # remember the card so we do not notify again when we see it next time
             try:
-                result = yall.update_token(uid)  # Call the backend that the card was inserted
+                result = yall.update_token(token_lookup.get(uid, {}).get('backend_id', '1'))  # Call the backend that the card was inserted
                 logger.info("Updated yall api for token %s with result %s" % (uid, result))
             except Exception as exc:
                 logger.error("Failed updating yall api for token %s with result %s" % (uid, exc))
